@@ -4,12 +4,14 @@ require('dotenv').config();
 class LLMService {
     constructor() {
         // Ollama Config (Primary - Local & Private)
-        this.ollamaUrl = 'http://localhost:11434/api/chat';
-        this.ollamaModel = 'phi3'; // Using phi3 as the default lightweight model
+        // Using 127.0.0.1 instead of localhost to avoid IPv6 resolution issues on macOS
+        this.ollamaUrl = 'http://127.0.0.1:11434/api/chat';
+        this.ollamaModel = 'phi3'; 
 
         // Hugging Face Config (Fallback - Cloud Backup)
         this.hfApiKey = process.env.HF_API_TOKEN;
-        this.hfModel = 'meta-llama/Llama-3-8B-Instruct';
+        // Using a more reliable open-weight model for fallback
+        this.hfModel = 'meta-llama/Meta-Llama-3-8B-Instruct';
         this.hfUrl = `https://api-inference.huggingface.co/models/${this.hfModel}`;
     }
 
