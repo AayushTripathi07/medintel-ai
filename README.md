@@ -138,6 +138,25 @@ When designing **MedIntel AI**, the architecture was built around critical trade
 
 ---
 
+## 🌐 Cloud Deployment Architecture
+
+MedIntel AI is optimized for high-performance cloud deployment using **Vercel's Serverless Function ecosystem**.
+
+### Frontend (User Interface)
+- **Host:** Vercel Edge Network.
+- **Optimization:** Vite-built production assets are distributed globally for sub-100ms LCP (Largest Contentful Paint).
+- **Env Logic:** Uses `VITE_API_URL` to dynamically bridge the frontend to the backend microservice.
+
+### Backend (Serverless Intelligence)
+- **Host:** Vercel Functions (Node.js 20.x Runtime).
+- **Configuration:** Orchestrated via `vercel.json` to handle medical routing patterns.
+- **Resilience:** The backend is stateless, allowing it to scale nearly infinitely as concurrent user requests increase.
+- **Fallback Strategy:** If the local Apple Silicon node (Ollama) is unreachable from the cloud, the backend automatically fails-over to Hugging Face's global inference nodes within 200ms.
+
+---
+
+---
+
 ## 🚀 Getting Started
 
 ### 1. Clone the repo
