@@ -30,7 +30,10 @@ class LLMService {
                     stream: false, 
                     options: { temperature: temperature } 
                 },
-                { timeout: 30000 }
+                { 
+                    timeout: 30000,
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                }
             );
             return response.data.message.content;
         } catch (error) {
