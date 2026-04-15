@@ -203,6 +203,6 @@ Navigate to `http://localhost:5173` to begin.
 ### ✨ Developed by **Aayush Tripathi**
 *Full-Stack AI Engineer & Healthcare Enthusiast*
 
-[Portfolio](https://aayushtripathi.com) • [LinkedIn](https://linkedin.com/in/aayushtripathi07) • [GitHub](https://github.com/AayushTripathi07)
+[Portfolio](https://aayush-tripathi-port-g9fd.bolt.host/) • [LinkedIn](https://linkedin.com/in/aayushtripathi07) • [GitHub](https://github.com/AayushTripathi07)
 
 </div>
