@@ -17,7 +17,7 @@ class LLMService {
     async callLLM(messages, temperature = 0.7) {
         // ATTEMPT 1: OLLAMA (Primary Local)
         try {
-            console.log(`[LLM] Attempting local Ollama inference...`);
+            console.log(`[LLM] Attempting local Ollama inference (${this.ollamaModel})...`);
             const response = await axios.post(
                 this.ollamaUrl,
                 { 
@@ -26,31 +26,44 @@ class LLMService {
                     stream: false, 
                     options: { temperature: temperature } 
                 },
-                { timeout: 30000 } // 30 second timeout
+                { timeout: 30000 }
             );
             return response.data.message.content;
         } catch (error) {
-            console.warn('[LLM] Ollama failed (perhaps not running?). Falling back to Hugging Face...');
+            console.warn(`[LLM] Ollama failed: ${error.message}`);
         }
 
         // ATTEMPT 2: HUGGING FACE (Cloud Fallback)
         if (this.hfApiKey && this.hfApiKey !== 'your_hugging_face_token_here') {
             try {
-                console.log(`[LLM] Attempting Hugging Face fallback inference...`);
-                // Formatting messages for standard Instruct format
+                // Switching to a model that is universally available on the free tier
+                const robustModel = 'HuggingFaceH4/zephyr-7b-beta';
+                const robustUrl = `https://api-inference.huggingface.co/models/${robustModel}`;
+                
+                console.log(`[LLM] Attempting Hugging Face fallback (${robustModel})...`);
                 const promptString = messages.map(m => `[${m.role.toUpperCase()}]: ${m.content}`).join('\n') + '\n[ASSISTANT]:';
                 
                 const response = await axios.post(
-                    this.hfUrl,
+                    robustUrl,
                     { inputs: promptString, parameters: { max_new_tokens: 1024, temperature, return_full_text: false } },
                     { 
                         headers: { Authorization: `Bearer ${this.hfApiKey}`, 'Content-Type': 'application/json' },
-                        timeout: 30000 // 30 second timeout
+                        timeout: 30000 
                     }
                 );
-                return response.data[0].generated_text;
+                
+                if (response.data && response.data[0]) {
+                    return response.data[0].generated_text;
+                }
+                
+                if (response.data && response.data.generated_text) {
+                    return response.data.generated_text;
+                }
+                
+                throw new Error('Unexpected response format from HF');
             } catch (error) {
-                console.error('[LLM] Hugging Face failed as well.');
+                console.error(`[LLM] Hugging Face failed: ${error.message}`);
+                if (error.response) console.error(`[LLM] HF Response Logic: ${JSON.stringify(error.response.data)}`);
             }
         }
 
