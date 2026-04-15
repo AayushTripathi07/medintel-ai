@@ -6,7 +6,7 @@ require('dotenv').config();
 const apiRoutes = require('./routes/api');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5005;
 
 // Middleware
 app.use(cors());
@@ -16,28 +16,21 @@ app.use(express.json());
 app.use('/api', apiRoutes);
 
 // Database Connection
-if (process.env.MONGODB_URI && process.env.MONGODB_URI !== 'your_mongodb_uri_here') {
+if (process.env.MONGODB_URI) {
     mongoose.connect(process.env.MONGODB_URI)
         .then(() => console.log('MongoDB Connected'))
         .catch(err => {
             console.error('MongoDB Connection Error:', err.message);
-            console.warn('Proceeding with in-memory/mock behavior.');
+            console.warn('Proceeding without database (memory-only mode).');
         });
 } else {
-    console.warn('MONGODB_URI not found. Running in ephemeral in-memory mode (perfect for cloud demos).');
+    console.warn('MONGODB_URI not set. Running without database.');
 }
 
-// Basic check
 app.get('/', (req, res) => {
     res.send('MedIntel AI API is running...');
 });
 
-// Local development execution
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(PORT, () => {
-        console.log(`Server running locally on port ${PORT}`);
-    });
-}
-
-// Express requires exporting the app object for Vercel Serverless 
-module.exports = app;
+app.listen(PORT, () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+});

@@ -4,7 +4,7 @@ import { Search, Send, User, Bot, Loader2, Info, BookOpen, FlaskConical, Message
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Handle dynamic routing for live deployment (Vercel) vs local testing
-const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5005/api';
+const API_BASE = 'http://127.0.0.1:5005/api';
 
 const App = () => {
   const [isCaseActive, setIsCaseActive] = useState(false);
