@@ -112,7 +112,10 @@ exports.getHealth = async (req, res) => {
         // Simple connectivity probe for Ollama (local-only)
         let ollamaStatus = 'Unavailable';
         try {
-            const ollamaCheck = await axios.get('http://127.0.0.1:11434/api/tags', { timeout: 1000 });
+            const ollamaCheck = await axios.get(`${process.env.OLLAMA_TUNNEL_URL}/api/tags`, { 
+                timeout: 2000,
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            });
             if (ollamaCheck.status === 200) ollamaStatus = 'Active';
         } catch (e) {}
 
