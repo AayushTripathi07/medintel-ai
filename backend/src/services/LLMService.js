@@ -4,13 +4,17 @@ require('dotenv').config();
 class LLMService {
     constructor() {
         // Ollama Config (Primary - Local & Private)
-        this.ollamaUrl = 'http://127.0.0.1:11434/api/chat';
+        // If on Vercel, we can use an Ngrok tunnel to reach the local Mac
+        this.ollamaUrl = process.env.OLLAMA_TUNNEL_URL 
+            ? `${process.env.OLLAMA_TUNNEL_URL}/api/chat`
+            : 'http://127.0.0.1:11434/api/chat';
+        
         this.ollamaModel = 'phi3'; 
 
         // Hugging Face Config (Fallback - Cloud Backup)
         this.hfApiKey = process.env.HF_API_TOKEN;
-        // Using Mistral as it is highly reliable and non-gated on the Inference API
-        this.hfModel = 'mistralai/Mistral-7B-Instruct-v0.2';
+        // Using Zephyr as a reliable fallback model
+        this.hfModel = 'HuggingFaceH4/zephyr-7b-beta';
         this.hfUrl = `https://api-inference.huggingface.co/models/${this.hfModel}`;
     }
 
