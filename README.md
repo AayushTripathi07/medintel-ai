@@ -12,6 +12,8 @@
 
 **MedIntel AI is not just a chatbot—it is a complete Medical Intelligence Platform. It integrates real-time clinical trial harvesting, deep semantic literature retrieval, and Local Large Language Model (LLM) reasoning to provide a 360-degree, hallucination-free view of personalized healthcare.**
 
+[![▶ Watch Demo](https://img.shields.io/badge/▶_Watch_Demo-Loom-red?style=for-the-badge&logo=loom)](https://www.loom.com/share/05f1f13c776d482ca483dd797ede8df0)
+
 </div>
 
 ---
