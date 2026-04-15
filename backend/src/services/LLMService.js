@@ -4,14 +4,13 @@ require('dotenv').config();
 class LLMService {
     constructor() {
         // Ollama Config (Primary - Local & Private)
-        // Using 127.0.0.1 instead of localhost to avoid IPv6 resolution issues on macOS
         this.ollamaUrl = 'http://127.0.0.1:11434/api/chat';
         this.ollamaModel = 'phi3'; 
 
         // Hugging Face Config (Fallback - Cloud Backup)
         this.hfApiKey = process.env.HF_API_TOKEN;
-        // Using a more reliable open-weight model for fallback
-        this.hfModel = 'meta-llama/Meta-Llama-3-8B-Instruct';
+        // Using Mistral as it is highly reliable and non-gated on the Inference API
+        this.hfModel = 'mistralai/Mistral-7B-Instruct-v0.2';
         this.hfUrl = `https://api-inference.huggingface.co/models/${this.hfModel}`;
     }
 
@@ -26,7 +25,8 @@ class LLMService {
                     messages: messages, 
                     stream: false, 
                     options: { temperature: temperature } 
-                }
+                },
+                { timeout: 30000 } // 30 second timeout
             );
             return response.data.message.content;
         } catch (error) {
@@ -37,13 +37,16 @@ class LLMService {
         if (this.hfApiKey && this.hfApiKey !== 'your_hugging_face_token_here') {
             try {
                 console.log(`[LLM] Attempting Hugging Face fallback inference...`);
-                // Formatting OpenAI messages to standard string for HF Inference API
-                const promptString = messages.map(m => `<|start_header_id|>${m.role}<|end_header_id|>\n${m.content}<|eot_id|>`).join('\n') + '<|start_header_id|>assistant<|end_header_id|>';
+                // Formatting messages for standard Instruct format
+                const promptString = messages.map(m => `[${m.role.toUpperCase()}]: ${m.content}`).join('\n') + '\n[ASSISTANT]:';
                 
                 const response = await axios.post(
                     this.hfUrl,
                     { inputs: promptString, parameters: { max_new_tokens: 1024, temperature, return_full_text: false } },
-                    { headers: { Authorization: `Bearer ${this.hfApiKey}`, 'Content-Type': 'application/json' } }
+                    { 
+                        headers: { Authorization: `Bearer ${this.hfApiKey}`, 'Content-Type': 'application/json' },
+                        timeout: 30000 // 30 second timeout
+                    }
                 );
                 return response.data[0].generated_text;
             } catch (error) {
