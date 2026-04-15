@@ -159,50 +159,50 @@ MedIntel AI is optimized for high-performance cloud deployment using **Vercel's 
 
 ## 🚀 Getting Started
 
-### 1. Clone the repo
+## 🚀 Getting Started
+
+### 1. Clone & Install
 ```bash
 git clone https://github.com/AayushTripathi07/medintel-ai.git
 cd medintel-ai
+
+# Install all dependencies at once
+cd backend && npm install && cd ../frontend && npm install && cd ..
 ```
 
-### 2. Ensure Prerequisites
-*   [Node.js (v18+)](https://nodejs.org/) installed
-*   [MongoDB Community Edition](https://www.mongodb.com/) running locally:
+### 2. Environment Configuration
+Create a `.env` file inside the `/backend` directory:
+```env
+PORT=5005
+MONGODB_URI=mongodb://localhost:27017/medintel
+HF_API_TOKEN=your_huggingface_token_here  # Optional: For cloud fallback
+```
+> [!NOTE]
+> We use **Port 5005** by default to avoid conflicts with macOS AirPlay (which often camps on Port 5000).
+
+### 3. Launch Services
+You will need three terminal windows:
+
+*   **Terminal 1 (Database):** `brew services start mongodb-community`
+*   **Terminal 2 (Local AI):** `ollama run phi3`
+*   **Terminal 3 (Application):** From the root directory:
     ```bash
-    brew tap mongodb/brew
-    brew install mongodb-community
-    brew services start mongodb-community
-    ```
-*   [Ollama](https://ollama.com/) installed and running `phi3`:
-    ```bash
-    ollama run phi3
+    # Start Backend
+    cd backend && npm run dev
+    
+    # Start Frontend (In a new tab)
+    cd frontend && npm run dev
     ```
 
-### 3. Backend Setup
-```bash
-cd backend
-npm install
-```
-*(Optional) Create a `.env` file and add your Hugging Face API key (`HF_API_TOKEN`) for the cloud fallback system.*
-```bash
-npm run dev
-```
-
-### 4. Frontend Setup
-In a new terminal:
-```bash
-cd frontend
-npm install
-npm run dev
-```
-Open your browser and navigate to `http://localhost:5173`.
+Navigate to `http://localhost:5173` to begin.
 
 ---
 
 <div align="center">
 
-**Author: Aayush Tripathi**
+### ✨ Developed by **Aayush Tripathi**
+*Full-Stack AI Engineer & Healthcare Enthusiast*
 
-[GitHub](https://github.com/AayushTripathi07) • [LinkedIn](https://linkedin.com/in/aayushtripathi07)
+[Portfolio](https://aayushtripathi.com) • [LinkedIn](https://linkedin.com/in/aayushtripathi07) • [GitHub](https://github.com/AayushTripathi07)
 
 </div>
