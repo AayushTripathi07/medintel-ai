@@ -45,7 +45,10 @@ class LLMService {
                 
                 const response = await axios.post(
                     robustUrl,
-                    { inputs: promptString, parameters: { max_new_tokens: 1024, temperature, return_full_text: false } },
+                    { 
+                        inputs: `<|system|>\n${messages[0].content}</s>\n<|user|>\n${messages.slice(1).map(m => m.content).join('\n')}</s>\n<|assistant|>\n`, 
+                        parameters: { max_new_tokens: 1024, temperature, return_full_text: false } 
+                    },
                     { 
                         headers: { Authorization: `Bearer ${this.hfApiKey}`, 'Content-Type': 'application/json' },
                         timeout: 30000 

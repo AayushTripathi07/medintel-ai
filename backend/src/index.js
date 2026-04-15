@@ -16,12 +16,16 @@ app.use(express.json());
 app.use('/api', apiRoutes);
 
 // Database Connection
-mongoose.connect(process.env.MONGODB_URI)
-    .then(() => console.log('MongoDB Connected'))
-    .catch(err => {
-        console.error('MongoDB Connection Error:', err.message);
-        console.warn('Proceeding with in-memory/mock behavior if database is unavailable.');
-    });
+if (process.env.MONGODB_URI && process.env.MONGODB_URI !== 'your_mongodb_uri_here') {
+    mongoose.connect(process.env.MONGODB_URI)
+        .then(() => console.log('MongoDB Connected'))
+        .catch(err => {
+            console.error('MongoDB Connection Error:', err.message);
+            console.warn('Proceeding with in-memory/mock behavior.');
+        });
+} else {
+    console.warn('MONGODB_URI not found. Running in ephemeral in-memory mode (perfect for cloud demos).');
+}
 
 // Basic check
 app.get('/', (req, res) => {
