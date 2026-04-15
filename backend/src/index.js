@@ -28,6 +28,12 @@ app.get('/', (req, res) => {
     res.send('MedIntel AI API is running...');
 });
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// Local development execution
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(PORT, () => {
+        console.log(`Server running locally on port ${PORT}`);
+    });
+}
+
+// Express requires exporting the app object for Vercel Serverless 
+module.exports = app;
