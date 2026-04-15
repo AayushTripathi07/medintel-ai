@@ -3,7 +3,8 @@ import axios from 'axios';
 import { Search, Send, User, Bot, Loader2, Info, BookOpen, FlaskConical, MessageSquare, History, Plus } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const API_BASE = 'http://localhost:5005/api';
+// Handle dynamic routing for live deployment (Vercel) vs local testing
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5005/api';
 
 const App = () => {
   const [isCaseActive, setIsCaseActive] = useState(false);
