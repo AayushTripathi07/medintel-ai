@@ -1,3 +1,5 @@
+const mongoose = require('mongoose');
+const axios = require('axios');
 const Conversation = require('../models/Conversation');
 const LLMService = require('../services/LLMService');
 const RetrievalService = require('../services/RetrievalService');
@@ -79,18 +81,50 @@ exports.sendMessage = async (req, res) => {
 
 exports.getHistory = async (req, res) => {
     try {
+        // Return empty history if DB is not connected
+        if (mongoose.connection.readyState !== 1) {
+            return res.json([]);
+        }
         const conversations = await Conversation.find().sort({ updatedAt: -1 }).limit(10);
-        res.json(conversations);
+        res.json(conversations || []);
     } catch (error) {
-        res.status(500).json({ error: 'Failed to fetch history' });
+        res.json([]);
     }
 };
 
 exports.getConversation = async (req, res) => {
     try {
+        if (mongoose.connection.readyState !== 1) {
+            return res.status(404).json({ error: 'Database unavailable' });
+        }
         const conversation = await Conversation.findById(req.params.id);
+        if (!conversation) return res.status(404).json({ error: 'Conversation not found' });
         res.json(conversation);
     } catch (error) {
         res.status(404).json({ error: 'Conversation not found' });
+    }
+};
+
+exports.getHealth = async (req, res) => {
+    try {
+        const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
+        
+        // Simple connectivity probe for Ollama (local-only)
+        let ollamaStatus = 'Unavailable';
+        try {
+            const ollamaCheck = await axios.get('http://127.0.0.1:11434/api/tags', { timeout: 1000 });
+            if (ollamaCheck.status === 200) ollamaStatus = 'Active';
+        } catch (e) {}
+
+        const hfStatus = (process.env.HF_API_TOKEN && process.env.HF_API_TOKEN.length > 10) ? 'Available' : 'Missing';
+        
+        res.json({
+            database: dbStatus,
+            ollama: ollamaStatus,
+            huggingface: hfStatus,
+            mode: process.env.NODE_ENV || 'development'
+        });
+    } catch (error) {
+        res.status(500).json({ error: 'Health check failed' });
     }
 };

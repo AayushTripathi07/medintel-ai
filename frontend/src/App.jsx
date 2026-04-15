@@ -8,6 +8,7 @@ const API_BASE = import.meta.env.VITE_API_URL || 'http://127.0.0.1:5005/api';
 
 const App = () => {
   const [isCaseActive, setIsCaseActive] = useState(false);
+  const [systemStatus, setSystemStatus] = useState({ database: 'Checking...', ollama: 'Checking...', huggingface: 'Checking...' });
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -34,6 +35,21 @@ const App = () => {
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
+
+  // Poll system health
+  useEffect(() => {
+    const checkHealth = async () => {
+      try {
+        const res = await axios.get(`${API_BASE}/health`);
+        setSystemStatus(res.data);
+      } catch (err) {
+        console.error('Health check failed');
+      }
+    };
+    checkHealth();
+    const interval = setInterval(checkHealth, 30000); // Poll every 30s
+    return () => clearInterval(interval);
+  }, []);
 
   const fetchHistory = async () => {
     try {
@@ -238,8 +254,11 @@ const App = () => {
             <span className="text-sm font-medium text-slate-300">Neural Synthesis Active</span>
           </div>
           <div className="text-[10px] sm:text-xs text-slate-500 font-mono flex gap-3">
-            <span className="hidden sm:inline">Context: {userContext.disease || 'General'}</span>
-            <span>LLM: Local Verified</span>
+            <span className="hidden sm:inline">DB: {systemStatus.database}</span>
+            <span className="hidden sm:inline">Node: {systemStatus.huggingface === 'Available' ? 'Cloud' : 'Local'}</span>
+            <span className={systemStatus.ollama === 'Active' || systemStatus.huggingface === 'Available' ? 'text-emerald-500' : 'text-rose-500'}>
+              AI: {systemStatus.ollama === 'Active' ? 'Ollama Active' : (systemStatus.huggingface === 'Available' ? 'HF Cloud Active' : 'Offline')}
+            </span>
           </div>
         </header>
 
