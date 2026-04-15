@@ -12,6 +12,9 @@
 
 **MedIntel AI is not just a chatbot—it is a complete Medical Intelligence Platform. It integrates real-time clinical trial harvesting, deep semantic literature retrieval, and Local Large Language Model (LLM) reasoning to provide a 360-degree, hallucination-free view of personalized healthcare.**
 
+[![🚀 Live Demo](https://img.shields.io/badge/🚀_Live_Demo-Vercel-blue?style=for-the-badge)](https://medintel-ai-khaki.vercel.app)
+[![▶ Watch Demo](https://img.shields.io/badge/▶_Watch_Demo-Loom-red?style=for-the-badge)](file:///Users/aayushtripathi/.gemini/antigravity/brain/17eab1de-e3cb-4659-a9a5-8c7095b47265/medintel_full_walkthrough_1776255540119.webp)
+
 </div>
 
 ---
