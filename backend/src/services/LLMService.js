@@ -5,14 +5,19 @@ class LLMService {
     constructor() {
         // Ollama Config (Primary - Local & Private)
         // If on Vercel, we can use an Ngrok tunnel to reach the local Mac
-        const tunnelBase = process.env.OLLAMA_TUNNEL_URL ? process.env.OLLAMA_TUNNEL_URL.replace(/\/$/, '') : null;
+        const tunnelBase = process.env.OLLAMA_TUNNEL_URL ? process.env.OLLAMA_TUNNEL_URL.trim().replace(/\/$/, '') : null;
         this.ollamaUrl = tunnelBase 
             ? `${tunnelBase}/api/chat`
             : 'http://127.0.0.1:11434/api/chat';
         
+        this.ollamaModel = 'phi3'; 
+        
         if (tunnelBase) {
             console.log(`[LLM] Bridge Protocol Active: Tunneling to ${this.ollamaUrl}`);
         }
+
+        // Hugging Face Config (Fallback - Cloud Backup)
+        this.hfApiKey = process.env.HF_API_TOKEN ? process.env.HF_API_TOKEN.trim() : null;
         // Using Zephyr as a reliable fallback model
         this.hfModel = 'HuggingFaceH4/zephyr-7b-beta';
         this.hfUrl = `https://api-inference.huggingface.co/models/${this.hfModel}`;

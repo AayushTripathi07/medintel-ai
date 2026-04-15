@@ -109,23 +109,31 @@ exports.getHealth = async (req, res) => {
     try {
         const dbStatus = mongoose.connection.readyState === 1 ? 'Connected' : 'Disconnected';
         
-        // Simple connectivity probe for Ollama (local-only)
+        // Simple connectivity probe for Ollama (local-mac via tunnel)
         let ollamaStatus = 'Unavailable';
-        try {
-            const ollamaCheck = await axios.get(`${process.env.OLLAMA_TUNNEL_URL}/api/tags`, { 
-                timeout: 2000,
-                headers: { 'ngrok-skip-browser-warning': 'true' }
-            });
-            if (ollamaCheck.status === 200) ollamaStatus = 'Active';
-        } catch (e) {}
+        let ollamaError = null;
+        const tunnelUrl = process.env.OLLAMA_TUNNEL_URL ? process.env.OLLAMA_TUNNEL_URL.trim() : null;
 
-        const hfStatus = (process.env.HF_API_TOKEN && process.env.HF_API_TOKEN.length > 10) ? 'Available' : 'Missing';
+        try {
+            if (tunnelUrl) {
+                const ollamaCheck = await axios.get(`${tunnelUrl}/api/tags`, { 
+                    timeout: 4000,
+                    headers: { 'ngrok-skip-browser-warning': 'true' }
+                });
+                if (ollamaCheck.status === 200) ollamaStatus = 'Active';
+            }
+        } catch (e) {
+            ollamaError = e.message;
+        }
+
+        const hfStatus = (process.env.HF_API_TOKEN && process.env.HF_API_TOKEN.trim().length > 10) ? 'Available' : 'Missing';
         
         res.json({
             database: dbStatus,
             ollama: ollamaStatus,
+            ollama_debug: ollamaError,
             huggingface: hfStatus,
-            mode: process.env.NODE_ENV || 'development'
+            mode: (process.env.NODE_ENV || 'development').trim()
         });
     } catch (error) {
         res.status(500).json({ error: 'Health check failed' });
